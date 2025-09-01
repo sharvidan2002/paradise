@@ -22,7 +22,6 @@ const app = express();
 connectDB();
 
 // Security middleware
-app.use(helmet());
 
 // CORS middleware: must be before routes
 app.use(cors({
@@ -32,6 +31,21 @@ app.use(cors({
   allowedHeaders: ['Content-Type', 'Authorization', 'Origin', 'X-Requested-With', 'Accept'],
   preflightContinue: false,
   optionsSuccessStatus: 204
+}));
+
+app.use(helmet({
+  crossOriginEmbedderPolicy: false, // allows cross-origin <canvas>, PDFs etc.
+  contentSecurityPolicy: {
+    useDefaults: true,
+    directives: {
+      "default-src": ["'self'"],
+      "style-src": ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com"],
+      "font-src": ["'self'", "https://fonts.gstatic.com"],
+      "script-src": ["'self'"],
+      "img-src": ["'self'", "data:", "https://*"], // allows external images
+      "connect-src": ["'self'", "http://localhost:5173", "https://api.example.com"], // adjust for frontend/API calls
+    },
+  },
 }));
 
 // Rate limiting
