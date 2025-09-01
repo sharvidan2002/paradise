@@ -17,23 +17,10 @@ const { authenticateToken } = require('../middleware/auth');
 
 const router = express.Router();
 
-// CORS middleware for analysis routes
-router.use((req, res, next) => {
-  res.header('Access-Control-Allow-Origin', 'http://localhost:3000');
-  res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
-  res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization');
-  res.header('Access-Control-Allow-Credentials', 'true');
-
-  if (req.method === 'OPTIONS') {
-    return res.status(200).end();
-  }
-  next();
-});
-
 // All analysis routes require authentication
 router.use(authenticateToken);
 
-// IMPORTANT: Specific routes MUST come before parameterized routes (/:id)
+// IMPORTANT: Specific routes MUST come before parameterized routes
 
 // Get all analyses for user
 router.get('/', getAllAnalyses);

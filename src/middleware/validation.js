@@ -51,18 +51,29 @@ const validateChat = [
 ];
 
 const handleValidationErrors = (req, res, next) => {
+  console.log('Validation middleware called'); // Debug log
+  console.log('Request body:', req.body); // Debug log
+
   const errors = validationResult(req);
 
   if (!errors.isEmpty()) {
+    console.log('Validation errors:', errors.array()); // Debug log
+
+    // Ensure CORS headers are set for validation errors
+    res.header('Access-Control-Allow-Origin', req.headers.origin || 'http://localhost:3000');
+    res.header('Access-Control-Allow-Credentials', 'true');
+
     return res.status(400).json({
+      success: false,
       message: 'Validation failed',
       errors: errors.array().map(error => ({
-        field: error.path,
+        field: error.path || error.param,
         message: error.msg
       }))
     });
   }
 
+  console.log('Validation passed, continuing...'); // Debug log
   next();
 };
 

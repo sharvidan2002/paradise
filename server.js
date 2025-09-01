@@ -21,20 +21,37 @@ const app = express();
 // Connect to MongoDB
 connectDB();
 
-// Security middleware
-
-// CORS middleware: must be before routes
-app.use(cors({
-  origin: 'http://localhost:3000',
+// CORS middleware: must be FIRST, before any other middleware
+const corsOptions = {
+  origin: ['http://localhost:3000', 'http://127.0.0.1:3000'],
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization', 'Origin', 'X-Requested-With', 'Accept'],
+  allowedHeaders: [
+    'Content-Type',
+    'Authorization',
+    'Origin',
+    'X-Requested-With',
+    'Accept',
+    'Access-Control-Allow-Origin',
+    'Access-Control-Allow-Headers',
+    'Access-Control-Allow-Methods'
+  ],
   preflightContinue: false,
   optionsSuccessStatus: 204
-}));
+};
 
+app.use(cors(corsOptions));
+
+// Handle preflight requests explicitly
+app.options('*', cors(corsOptions));
+
+// Body parsing middleware - MUST come after CORS
+app.use(express.json({ limit: '50mb' }));
+app.use(express.urlencoded({ extended: true, limit: '50mb' }));
+
+// Security middleware
 app.use(helmet({
-  crossOriginEmbedderPolicy: false, // allows cross-origin <canvas>, PDFs etc.
+  crossOriginEmbedderPolicy: false,
   contentSecurityPolicy: {
     useDefaults: true,
     directives: {
@@ -42,8 +59,8 @@ app.use(helmet({
       "style-src": ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com"],
       "font-src": ["'self'", "https://fonts.gstatic.com"],
       "script-src": ["'self'"],
-      "img-src": ["'self'", "data:", "https://*"], // allows external images
-      "connect-src": ["'self'", "http://localhost:3000", "https://api.example.com"], // adjust for frontend/API calls
+      "img-src": ["'self'", "data:", "https://*"],
+      "connect-src": ["'self'", "http://localhost:3000", "https://api.example.com"],
     },
   },
 }));
@@ -54,10 +71,6 @@ const limiter = rateLimit({
   max: 100
 });
 app.use(limiter);
-
-// Body parsing middleware
-app.use(express.json({ limit: '50mb' }));
-app.use(express.urlencoded({ extended: true, limit: '50mb' }));
 
 // Session configuration
 app.use(session({
