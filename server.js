@@ -25,7 +25,7 @@ connectDB();
 
 // CORS middleware: must be before routes
 app.use(cors({
-  origin: 'http://localhost:5173',
+  origin: 'http://localhost:3000',
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization', 'Origin', 'X-Requested-With', 'Accept'],
@@ -43,7 +43,7 @@ app.use(helmet({
       "font-src": ["'self'", "https://fonts.gstatic.com"],
       "script-src": ["'self'"],
       "img-src": ["'self'", "data:", "https://*"], // allows external images
-      "connect-src": ["'self'", "http://localhost:5173", "https://api.example.com"], // adjust for frontend/API calls
+      "connect-src": ["'self'", "http://localhost:3000", "https://api.example.com"], // adjust for frontend/API calls
     },
   },
 }));
